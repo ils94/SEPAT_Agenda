@@ -44,7 +44,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             holder.visualizador.setBackgroundColor(Color.parseColor("#FFFF00"));
         } else if (textId[6].contains("URGENTE")) {
 
-            holder.visualizador.setBackgroundColor(Color.parseColor("#FF0000"));
+            holder.visualizador.setBackgroundColor(Color.parseColor("#FF5349"));
         } else if (textId[6].contains("RESOLVIDO")) {
 
             holder.visualizador.setBackgroundColor(Color.parseColor("#00FF00"));

@@ -7,11 +7,10 @@ import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.widget.TextView;
 
-import java.util.Locale;
-
 public class Detalhes extends AppCompatActivity {
 
-    TextView detalhes;
+    TextView textViewDetalhes;
+    String detalhes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,12 +19,12 @@ public class Detalhes extends AppCompatActivity {
 
         setTitle("Detalhes");
 
-        detalhes = findViewById(R.id.detalhes);
-        detalhes.setMovementMethod(new ScrollingMovementMethod());
+        textViewDetalhes = findViewById(R.id.detalhes);
+        textViewDetalhes.setMovementMethod(new ScrollingMovementMethod());
 
         Intent intent = getIntent();
-        String texto = intent.getStringExtra("detalhes");
+        detalhes = intent.getStringExtra("detalhes");
 
-        detalhes.setText(texto);
+        textViewDetalhes.setText(detalhes);
     }
 }
