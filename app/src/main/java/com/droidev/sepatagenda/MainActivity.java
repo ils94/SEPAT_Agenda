@@ -10,7 +10,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.StrictMode;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -254,17 +253,20 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
 
                 Toast.makeText(MainActivity.this, "Salvo", Toast.LENGTH_SHORT).show();
 
-                try {
+                new Thread(() -> {
 
-                    if (!(connection == null)) {
+                    try {
 
-                        connection.close();
+                        if (!(connection == null)) {
+
+                            connection.close();
+                        }
+
+                        makeConnection();
+                    } catch (SQLException e) {
+                        runOnUiThread(() -> Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show());
                     }
-
-                    makeConnection();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
+                }).start();
             }
         });
 
@@ -311,9 +313,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
 
         AppCompatDelegate.setDefaultNightMode(
                 AppCompatDelegate.MODE_NIGHT_YES);
