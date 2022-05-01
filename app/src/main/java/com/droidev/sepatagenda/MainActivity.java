@@ -10,6 +10,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -232,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
 
             if (atendente.getText().toString().isEmpty() || dbName.getText().toString().isEmpty() || dbUser.getText().toString().isEmpty() || dbPass.getText().toString().isEmpty() || dbHost.getText().toString().isEmpty() || dbPort.getText().toString().isEmpty()) {
 
-                Toast.makeText(MainActivity.this, "É neccessário prencher todos os campos", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "É neccessário preencher todos os campos", Toast.LENGTH_SHORT).show();
             } else {
 
                 tinyDB.remove("atendente");
@@ -252,6 +253,18 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
                 dialog.dismiss();
 
                 Toast.makeText(MainActivity.this, "Salvo", Toast.LENGTH_SHORT).show();
+
+                try {
+
+                    if (!(connection == null)) {
+
+                        connection.close();
+                    }
+
+                    makeConnection();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
             }
         });
 
@@ -298,6 +311,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         AppCompatDelegate.setDefaultNightMode(
                 AppCompatDelegate.MODE_NIGHT_YES);
