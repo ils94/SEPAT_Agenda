@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Sepatagenda">
         <activity
-            android:name=".Detalhes"
+            android:name=".DetalhesActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

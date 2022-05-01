@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.widget.TextView;
 
-public class Detalhes extends AppCompatActivity {
+public class DetalhesActivity extends AppCompatActivity {
 
     TextView textViewDetalhes;
     String detalhes;

@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -31,137 +31,32 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
     RecyclerView.Adapter Adapter;
 
     private Connection connection;
+    private Boolean confirmar = false;
 
     TinyDB tinyDB;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        AppCompatDelegate.setDefaultNightMode(
-                AppCompatDelegate.MODE_NIGHT_YES);
-
-        setContentView(R.layout.activity_main);
-
-        RecyclerView = findViewById(R.id.visualizador_recycle);
-
-        setTitle("SEPAT Agenda");
-
-        tinyDB = new TinyDB(MainActivity.this);
-
-        makeConnection();
-    }
-
-    @SuppressLint("NonConstantResourceId")
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-
-            case R.id.search:
-
-                procurar();
-
-                break;
-
-            case R.id.refresh:
-
-                carregar();
-
-                break;
-
-            case R.id.login:
-
-                login();
-
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
     public void makeConnection() {
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
+        new Thread(() -> {
+            try {
 
-                    String dbHost = tinyDB.getString("dbHost");
-                    String dbPort = tinyDB.getString("dbPort");
-                    String dbName = tinyDB.getString("dbName");
-                    String dbUser = tinyDB.getString("dbUser");
-                    String dbPass = tinyDB.getString("dbPass");
+                String dbHost = tinyDB.getString("dbHost");
+                String dbPort = tinyDB.getString("dbPort");
+                String dbName = tinyDB.getString("dbName");
+                String dbUser = tinyDB.getString("dbUser");
+                String dbPass = tinyDB.getString("dbPass");
 
-                    String url = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName;
+                String url = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName;
 
-                    if (!dbName.isEmpty()) {
+                if (!dbName.isEmpty()) {
 
-                        connection = DriverManager.getConnection(url, dbUser, dbPass);
-                    }
-
-                } catch (SQLException e) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    connection = DriverManager.getConnection(url, dbUser, dbPass);
                 }
+
+            } catch (SQLException e) {
+                runOnUiThread(() -> Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show());
             }
         }).start();
-    }
-
-    @Override
-    public void onLongItemClick(int position) {
-
-        String[] detalhesArray = banco.get(position).split("\n");
-
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setCancelable(false)
-                .setTitle(detalhesArray[0])
-                .setMessage(detalhesArray[6] + "\n\nEscolha as opções abaixo:")
-                .setPositiveButton("Detalhes", null)
-                .setNegativeButton("Fechar", null)
-                .setNeutralButton("Resolvido", null)
-                .show();
-
-        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        Button neutralButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
-
-        positiveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent myIntent = new Intent(MainActivity.this, Detalhes.class);
-                myIntent.putExtra("detalhes", detalhesArray[7].replace("Detalhes: ", ""));
-                startActivity(myIntent);
-
-                dialog.dismiss();
-            }
-        });
-
-        neutralButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (!detalhesArray[6].equals("Status: RESOLVIDO")) {
-
-                    mudarStatus(detalhesArray[0].replace("ID: ", ""), "RESOLVIDO");
-
-                    carregar();
-
-                    dialog.dismiss();
-                } else {
-
-                    Toast.makeText(MainActivity.this, "O Status já está marcado como ''Resolvido''", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
     }
 
     public void carregar() {
@@ -174,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
 
             } else {
 
-                Database db = new Database();
+                dbQueries db = new dbQueries();
 
                 banco = new ArrayList<>();
 
@@ -191,11 +86,63 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
         }
     }
 
-    public void procurar(){
+    public void procurar() {
 
+        EditText editText = new EditText(this);
+        editText.setHint("Exemplo: urgente");
+        editText.setInputType(InputType.TYPE_CLASS_TEXT);
+        editText.setMaxLines(1);
+
+        LinearLayout lay = new LinearLayout(this);
+        lay.setOrientation(LinearLayout.VERTICAL);
+        lay.addView(editText);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setCancelable(false)
+                .setTitle("Procurar")
+                .setMessage("Digite uma caracteristica da tarefa a ser procurada.")
+                .setPositiveButton("Procurar", null)
+                .setNegativeButton("Cancelar", null)
+                .setNeutralButton("Limpar", null)
+                .setView(lay)
+                .show();
+
+        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        Button neutralButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
+
+        positiveButton.setOnClickListener(v -> {
+
+            try {
+
+                if (connection.isClosed() || connection == null) {
+
+                    makeConnection();
+
+                } else {
+
+                    dbQueries db = new dbQueries();
+
+                    banco = new ArrayList<>();
+
+                    RecyclerView = findViewById(R.id.visualizador_recycle);
+                    RecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                    Adapter = new RecyclerViewAdapter(MainActivity.this, banco, MainActivity.this);
+                    RecyclerView.setAdapter(Adapter);
+
+                    banco.addAll(db.pesquisar(MainActivity.this, connection, editText.getText().toString()));
+
+                    dialog.dismiss();
+                }
+            } catch (Exception e) {
+
+                Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        neutralButton.setOnClickListener(v -> editText.setText(""));
     }
 
-    public void mudarStatus(String id, String status) {
+    public void mudarStatus(String id, String status, String atendente) {
 
         try {
 
@@ -205,9 +152,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
 
             } else {
 
-                Database db = new Database();
+                dbQueries db = new dbQueries();
 
-                db.marcarResolvido(MainActivity.this, connection, id, status);
+                db.marcarResolvido(MainActivity.this, connection, id, status, atendente);
             }
         } catch (Exception e) {
 
@@ -281,35 +228,141 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
             dbPort.setText("5432");
         }
 
-        positiveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        positiveButton.setOnClickListener(v -> {
 
-                if (atendente.getText().toString().isEmpty() || dbName.getText().toString().isEmpty() || dbUser.getText().toString().isEmpty() || dbPass.getText().toString().isEmpty() || dbHost.getText().toString().isEmpty() || dbPort.getText().toString().isEmpty()) {
+            if (atendente.getText().toString().isEmpty() || dbName.getText().toString().isEmpty() || dbUser.getText().toString().isEmpty() || dbPass.getText().toString().isEmpty() || dbHost.getText().toString().isEmpty() || dbPort.getText().toString().isEmpty()) {
 
-                    Toast.makeText(MainActivity.this, "É neccessário prencher todos os campos", Toast.LENGTH_SHORT).show();
-                } else {
+                Toast.makeText(MainActivity.this, "É neccessário prencher todos os campos", Toast.LENGTH_SHORT).show();
+            } else {
 
-                    tinyDB.putString("atendente", atendente.getText().toString());
-                    tinyDB.putString("dbName", dbName.getText().toString());
-                    tinyDB.putString("dbUser", dbUser.getText().toString());
-                    tinyDB.putString("dbPass", dbPass.getText().toString());
-                    tinyDB.putString("dbHost", dbHost.getText().toString());
-                    tinyDB.putString("dbPort", dbPort.getText().toString());
+                tinyDB.putString("atendente", atendente.getText().toString());
+                tinyDB.putString("dbName", dbName.getText().toString());
+                tinyDB.putString("dbUser", dbUser.getText().toString());
+                tinyDB.putString("dbPass", dbPass.getText().toString());
+                tinyDB.putString("dbHost", dbHost.getText().toString());
+                tinyDB.putString("dbPort", dbPort.getText().toString());
 
-                    dialog.dismiss();
-                }
+                dialog.dismiss();
             }
         });
 
-        neutralButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        neutralButton.setOnClickListener(v -> {
 
-                dbName.setText("");
-                dbUser.setText("");
-                dbPass.setText("");
-                dbHost.setText("");
+            dbName.setText("");
+            dbUser.setText("");
+            dbPass.setText("");
+            dbHost.setText("");
+        });
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.search:
+
+                procurar();
+
+                break;
+
+            case R.id.refresh:
+
+                carregar();
+
+                break;
+
+            case R.id.login:
+
+                login();
+
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        AppCompatDelegate.setDefaultNightMode(
+                AppCompatDelegate.MODE_NIGHT_YES);
+
+        setContentView(R.layout.activity_main);
+
+        RecyclerView = findViewById(R.id.visualizador_recycle);
+
+        setTitle("SEPAT Agenda");
+
+        tinyDB = new TinyDB(MainActivity.this);
+
+        makeConnection();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (confirmar) {
+            finish();
+        } else {
+            Toast.makeText(this, "Pressione voltar de novo para sair",
+                    Toast.LENGTH_SHORT).show();
+            confirmar = true;
+            new Handler().postDelayed(() -> confirmar = false, 3 * 1000);
+        }
+    }
+
+    @Override
+    public void onLongItemClick(int position) {
+
+        String[] detalhesArray = banco.get(position).split("\n");
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setCancelable(false)
+                .setTitle(detalhesArray[0])
+                .setMessage(detalhesArray[6] + "\n\nEscolha as opções abaixo:")
+                .setPositiveButton("Detalhes", null)
+                .setNegativeButton("Fechar", null)
+                .setNeutralButton("Resolvido", null)
+                .show();
+
+        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        Button neutralButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
+
+        positiveButton.setOnClickListener(v -> {
+
+            Intent myIntent = new Intent(MainActivity.this, DetalhesActivity.class);
+            myIntent.putExtra("detalhes", detalhesArray[2] +
+                    "\n\n" + detalhesArray[3] +
+                    "\n\nDetalhes: \n\n" + detalhesArray[8].replace("Detalhes: ", ""));
+            startActivity(myIntent);
+        });
+
+        neutralButton.setOnClickListener(v -> {
+
+            if (!detalhesArray[6].equals("Status: RESOLVIDO")) {
+
+                if (confirmar) {
+
+                    mudarStatus(detalhesArray[0].replace("ID: ", ""), "RESOLVIDO", tinyDB.getString("atendente").toUpperCase());
+
+                    carregar();
+
+                    dialog.dismiss();
+                } else {
+                    Toast.makeText(MainActivity.this, "Pressione RESOLVIDO de novo para confirmar", Toast.LENGTH_SHORT).show();
+
+                    confirmar = true;
+
+                    new Handler().postDelayed(() -> confirmar = false, 3 * 1000);
+                }
+            } else {
+
+                Toast.makeText(MainActivity.this, "O Status já está marcado como ''Resolvido''", Toast.LENGTH_SHORT).show();
             }
         });
     }

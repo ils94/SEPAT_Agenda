@@ -56,7 +56,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 "\n" + textId[3] +
                 "\n" + textId[4] +
                 "\n" + textId[5] +
-                "\n" + textId[6]);
+                "\n" + textId[6] +
+                "\n" + textId[7]);
     }
 
     @Override
