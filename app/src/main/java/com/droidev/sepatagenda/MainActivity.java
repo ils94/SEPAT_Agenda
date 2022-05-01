@@ -243,6 +243,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
                 tinyDB.putString("dbPort", dbPort.getText().toString());
 
                 dialog.dismiss();
+
+                Toast.makeText(MainActivity.this, "Salvo", Toast.LENGTH_SHORT).show();
             }
         });
 
