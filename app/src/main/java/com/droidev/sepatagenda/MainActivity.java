@@ -235,6 +235,13 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
                 Toast.makeText(MainActivity.this, "É neccessário prencher todos os campos", Toast.LENGTH_SHORT).show();
             } else {
 
+                tinyDB.remove("atendente");
+                tinyDB.remove("dbName");
+                tinyDB.remove("dbUser");
+                tinyDB.remove("dbPass");
+                tinyDB.remove("dbHost");
+                tinyDB.remove("dbPort");
+
                 tinyDB.putString("atendente", atendente.getText().toString());
                 tinyDB.putString("dbName", dbName.getText().toString());
                 tinyDB.putString("dbUser", dbUser.getText().toString());
