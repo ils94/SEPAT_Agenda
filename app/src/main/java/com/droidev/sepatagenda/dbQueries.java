@@ -35,17 +35,19 @@ public class dbQueries {
                     String hora = rs.getString("HORA");
                     String status = rs.getString("STATUS");
                     String concluido = rs.getString("CONCLUIDO");
+                    String reaberto = rs.getString("REABERTO");
                     String mensagem = rs.getString("DETALHES");
 
                     visualizador.add("ID: " + id
-                            + "\nAtendente: " + atendente
-                            + "\nSolicitante: " + solicitante
-                            + "\nAssunto: " + assunto
-                            + "\nData: " + data
-                            + "\nHora: " + hora
-                            + "\nStatus: " + status
-                            + "\nConcluído por: " + concluido
-                            + "\nDetalhes: " + mensagem);
+                            + "#@#Atendente: " + atendente
+                            + "#@#Solicitante: " + solicitante
+                            + "#@#Assunto: " + assunto
+                            + "#@#Data: " + data
+                            + "#@#Hora: " + hora
+                            + "#@#Status: " + status
+                            + "#@#Concluído por: " + concluido
+                            + "#@#Reaberto por: " + reaberto
+                            + "#@#Detalhes: " + mensagem);
                 }
 
             } catch (Exception e) {
@@ -94,17 +96,19 @@ public class dbQueries {
                     String hora = rs.getString("HORA");
                     String status = rs.getString("STATUS");
                     String concluido = rs.getString("CONCLUIDO");
+                    String reaberto = rs.getString("REABERTO");
                     String mensagem = rs.getString("DETALHES");
 
                     visualizador.add("ID: " + id
-                            + "\nAtendente: " + atendente
-                            + "\nSolicitante: " + solicitante
-                            + "\nAssunto: " + assunto
-                            + "\nData: " + data
-                            + "\nHora: " + hora
-                            + "\nStatus: " + status
-                            + "\nConcluído por: " + concluido
-                            + "\nDetalhes: " + mensagem);
+                            + "#@#Atendente: " + atendente
+                            + "#@#Solicitante: " + solicitante
+                            + "#@#Assunto: " + assunto
+                            + "#@#Data: " + data
+                            + "#@#Hora: " + hora
+                            + "#@#Status: " + status
+                            + "#@#Concluído por: " + concluido
+                            + "#@#Reaberto por: " + reaberto
+                            + "#@#Detalhes: " + mensagem);
                 }
 
             } catch (Exception e) {

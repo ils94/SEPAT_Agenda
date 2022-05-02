@@ -343,7 +343,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
     @Override
     public void onLongItemClick(int position) {
 
-        String[] detalhesArray = banco.get(position).split("\n");
+        String[] detalhesArray = banco.get(position).split("#@#");
 
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setCancelable(false)
@@ -362,7 +362,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
             Intent myIntent = new Intent(MainActivity.this, DetalhesActivity.class);
             myIntent.putExtra("detalhes", detalhesArray[2] +
                     "\n\n" + detalhesArray[3] +
-                    "\n\nDetalhes: \n\n" + detalhesArray[8].replace("Detalhes: ", ""));
+                    "\n\nDetalhes: \n\n" + detalhesArray[9].replace("Detalhes: ", ""));
             startActivity(myIntent);
         });
 

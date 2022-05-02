@@ -37,7 +37,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        String[] textId = banco.get(position).split("\n");
+        String[] textId = banco.get(position).split("#@#");
 
         if (textId[6].contains("NORMAL")) {
 
@@ -57,7 +57,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 "\n" + textId[4] +
                 "\n" + textId[5] +
                 "\n" + textId[6] +
-                "\n" + textId[7]);
+                "\n" + textId[7] +
+                "\n" + textId[8]);
     }
 
     @Override
