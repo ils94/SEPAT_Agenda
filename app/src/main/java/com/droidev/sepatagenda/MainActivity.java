@@ -21,7 +21,10 @@ import android.widget.Toast;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements RecyclerViewClickInterface {
 
@@ -34,6 +37,20 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
     private Boolean confirmar = false;
 
     TinyDB tinyDB;
+
+    public ArrayList<String> dataHora() {
+
+        String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+
+        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+
+        ArrayList<String> valores = new ArrayList<>();
+
+        valores.add(currentDate);
+        valores.add(currentTime);
+
+        return valores;
+    }
 
     public void makeConnection() {
 
@@ -152,9 +169,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
 
             } else {
 
+                String data = (String) dataHora().get(0);
+                String hora = (String) dataHora().get(1);
+
                 dbQueries db = new dbQueries();
 
-                db.marcarResolvido(MainActivity.this, connection, id, status, atendente);
+                db.marcarResolvido(MainActivity.this, connection, id, status, atendente + " - " + data + " - " + hora);
             }
         } catch (Exception e) {
 
@@ -162,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
         }
     }
 
+    @SuppressLint("SetTextI18n")
     public void login() {
 
         EditText atendente = new EditText(this);
