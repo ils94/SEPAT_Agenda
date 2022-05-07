@@ -276,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
                 tinyDB.remove("dbHost");
                 tinyDB.remove("dbPort");
 
-                tinyDB.putString("atendente", atendente.getText().toString());
+                tinyDB.putString("atendente", atendente.getText().toString().toUpperCase());
                 tinyDB.putString("dbName", dbName.getText().toString());
                 tinyDB.putString("dbUser", dbUser.getText().toString());
                 tinyDB.putString("dbPass", dbPass.getText().toString());
