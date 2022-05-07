@@ -56,7 +56,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
                 .replace("/09/", "/set/")
                 .replace("/10/", "/out/")
                 .replace("/11/", "/nov/")
-                .replace("/12/", "/dez/").toUpperCase();
+                .replace("/12/", "/dez/")
+                .toUpperCase();
 
         hora = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
     }
