@@ -21,11 +21,15 @@ import android.widget.Toast;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements RecyclerViewClickInterface {
 
     private ArrayList<String> banco;
+    private String data, hora;
 
     RecyclerView RecyclerView;
     RecyclerView.Adapter Adapter;
@@ -34,6 +38,29 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
     private Boolean confirmar = false;
 
     TinyDB tinyDB;
+
+    public void dataHora() {
+
+        data = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+
+        System.out.println(data);
+
+        data = data.replace("/01/", "/jan/")
+                .replace("/02/", "/fev/")
+                .replace("/03/", "/mar/")
+                .replace("/04/", "/abr/")
+                .replace("/05/", "/mai/")
+                .replace("/06/", "/jun/")
+                .replace("/07/", "/jul/")
+                .replace("/08/", "/ago/")
+                .replace("/09/", "/set/")
+                .replace("/10/", "/out/")
+                .replace("/11/", "/nov/")
+                .replace("/12/", "/dez/")
+                .toUpperCase();
+
+        hora = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+    }
 
     public void makeConnection() {
 
@@ -152,9 +179,11 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
 
             } else {
 
+                dataHora();
+
                 dbQueries db = new dbQueries();
 
-                db.marcarResolvido(MainActivity.this, connection, id, status, atendente);
+                db.marcarResolvido(MainActivity.this, connection, id, status, atendente + " - " + data + " - " + hora);
             }
         } catch (Exception e) {
 
@@ -162,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
         }
     }
 
+    @SuppressLint("SetTextI18n")
     public void login() {
 
         EditText atendente = new EditText(this);
@@ -233,6 +263,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
             if (atendente.getText().toString().isEmpty() || dbName.getText().toString().isEmpty() || dbUser.getText().toString().isEmpty() || dbPass.getText().toString().isEmpty() || dbHost.getText().toString().isEmpty() || dbPort.getText().toString().isEmpty()) {
 
                 Toast.makeText(MainActivity.this, "É neccessário preencher todos os campos", Toast.LENGTH_SHORT).show();
+
+            } else if (atendente.getText().toString().length() > 10) {
+
+                Toast.makeText(MainActivity.this, "Nome do Atendente não pode ser maior que 10 caracteres.", Toast.LENGTH_SHORT).show();
             } else {
 
                 tinyDB.remove("atendente");
@@ -242,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
                 tinyDB.remove("dbHost");
                 tinyDB.remove("dbPort");
 
-                tinyDB.putString("atendente", atendente.getText().toString());
+                tinyDB.putString("atendente", atendente.getText().toString().toUpperCase());
                 tinyDB.putString("dbName", dbName.getText().toString());
                 tinyDB.putString("dbUser", dbUser.getText().toString());
                 tinyDB.putString("dbPass", dbPass.getText().toString());
