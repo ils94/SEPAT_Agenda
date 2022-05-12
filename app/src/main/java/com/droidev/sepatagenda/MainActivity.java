@@ -43,8 +43,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
 
         data = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
 
-        System.out.println(data);
-
         data = data.replace("/01/", "/jan/")
                 .replace("/02/", "/fev/")
                 .replace("/03/", "/mar/")
