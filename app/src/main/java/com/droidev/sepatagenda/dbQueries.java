@@ -78,6 +78,7 @@ public class dbQueries {
                         "OR HORA ILIKE '%" + string + "%' " +
                         "OR STATUS ILIKE '%" + string + "%' " +
                         "OR CONCLUIDO ILIKE '%" + string + "%' " +
+                        "OR REABERTO ILIKE '%" + string + "%' " +
                         "OR DETALHES ILIKE '%" + string + "%' " +
                         "ORDER BY ID DESC";
 
