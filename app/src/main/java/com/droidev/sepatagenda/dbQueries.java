@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.widget.Toast;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -69,21 +70,32 @@ public class dbQueries {
 
             try {
 
-                Statement stmt;
+                PreparedStatement pst;
+
                 String sql = "SELECT * FROM AGENDA WHERE " +
-                        "ATENDENTE ILIKE '%" + string + "%' " +
-                        "OR SOLICITANTE ILIKE '%" + string + "%' " +
-                        "OR ASSUNTO ILIKE '%" + string + "%' " +
-                        "OR DATA ILIKE '%" + string + "%' " +
-                        "OR HORA ILIKE '%" + string + "%' " +
-                        "OR STATUS ILIKE '%" + string + "%' " +
-                        "OR CONCLUIDO ILIKE '%" + string + "%' " +
-                        "OR REABERTO ILIKE '%" + string + "%' " +
-                        "OR DETALHES ILIKE '%" + string + "%' " +
+                        "ATENDENTE ILIKE ? " +
+                        "OR SOLICITANTE ILIKE ? " +
+                        "OR ASSUNTO ILIKE ? " +
+                        "OR DATA ILIKE ? " +
+                        "OR HORA ILIKE ? " +
+                        "OR STATUS ILIKE ? " +
+                        "OR CONCLUIDO ILIKE ? " +
+                        "OR REABERTO ILIKE ? " +
+                        "OR DETALHES ILIKE ? " +
                         "ORDER BY ID DESC";
 
-                stmt = connection.createStatement();
-                ResultSet rs = stmt.executeQuery(sql);
+                pst = connection.prepareStatement(sql);
+                pst.setString(1, "%" + string + "%");
+                pst.setString(2, "%" + string + "%");
+                pst.setString(3, "%" + string + "%");
+                pst.setString(4, "%" + string + "%");
+                pst.setString(5, "%" + string + "%");
+                pst.setString(6, "%" + string + "%");
+                pst.setString(7, "%" + string + "%");
+                pst.setString(8, "%" + string + "%");
+                pst.setString(9, "%" + string + "%");
+
+                ResultSet rs = pst.executeQuery();
 
                 visualizador = new ArrayList<>();
 
@@ -132,10 +144,17 @@ public class dbQueries {
 
             try {
 
-                String sql = "UPDATE AGENDA SET STATUS = '" + status + "', CONCLUIDO = '" + atendente + "' WHERE ID = '" + id + "'";
+                PreparedStatement pst;
 
-                Statement stmt = connection.createStatement();
-                stmt.executeUpdate(sql);
+                String sql = "UPDATE AGENDA SET STATUS = ?, CONCLUIDO = ? WHERE ID = ?";
+
+                pst = connection.prepareStatement(sql);
+
+                pst.setString(1, status);
+                pst.setString(2, atendente);
+                pst.setInt(3, Integer.parseInt(id));
+
+                pst.executeUpdate();
 
             } catch (Exception e) {
                 activity.runOnUiThread(() -> Toast.makeText(activity.getBaseContext(), e.toString(), Toast.LENGTH_SHORT).show());
