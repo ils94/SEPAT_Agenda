@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
 
             } else {
 
-                dbQueries db = new dbQueries();
+                DBQueries db = new DBQueries();
 
                 banco = new ArrayList<>();
 
@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
 
                 } else {
 
-                    dbQueries db = new dbQueries();
+                    DBQueries db = new DBQueries();
 
                     banco = new ArrayList<>();
 
@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
 
                 dataHora();
 
-                dbQueries db = new dbQueries();
+                DBQueries db = new DBQueries();
 
                 db.marcarResolvido(MainActivity.this, connection, id, status, atendente + " - " + data + " - " + hora);
             }
