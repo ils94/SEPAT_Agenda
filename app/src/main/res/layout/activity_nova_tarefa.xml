@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="5dp"
     tools:context=".NovaTarefa">
 
     <EditText
@@ -18,32 +19,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="horizontal"
-        android:paddingHorizontal="5dp">
+        android:orientation="horizontal">
 
         <EditText
             android:id="@+id/data"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Data"
-            android:paddingHorizontal="5dp" />
+            android:hint="Data" />
 
         <EditText
             android:id="@+id/hora"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Hora"
-            android:paddingHorizontal="5dp" />
+            android:hint="Hora" />
 
     </LinearLayout>
 
     <RadioGroup
+        android:id="@+id/radioGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:id="@+id/radioGroup"
         android:orientation="horizontal">
 
         <RadioButton

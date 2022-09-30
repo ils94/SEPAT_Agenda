@@ -72,6 +72,11 @@ public class NovaTarefa extends AppCompatActivity {
                             mensagem.getText().toString());
 
                     Toast.makeText(NovaTarefa.this, "Tarefa adicionada.", Toast.LENGTH_SHORT).show();
+                    
+                    assunto.setText("");
+                    dataEditText.setText("");
+                    horaEditText.setText("");
+                    mensagem.setText("");
 
                 } else {
 
