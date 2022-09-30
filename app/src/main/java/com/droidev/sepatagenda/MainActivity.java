@@ -333,6 +333,13 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
                 login();
 
                 break;
+
+            case R.id.novaTarefa:
+
+                Intent myIntent = new Intent(MainActivity.this, NovaTarefa.class);
+                startActivity(myIntent);
+
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -345,9 +352,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        AppCompatDelegate.setDefaultNightMode(
-                AppCompatDelegate.MODE_NIGHT_YES);
 
         setContentView(R.layout.activity_main);
 

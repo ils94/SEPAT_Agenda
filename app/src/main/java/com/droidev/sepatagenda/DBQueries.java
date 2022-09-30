@@ -168,25 +168,26 @@ public class DBQueries {
         }
     }
 
-    public void inserir(Activity activity, Connection connection, String atendente, String solicitante, String data, String hora, String status, String concluido, String reaberto, String detalhes) {
+    public void inserir(Activity activity, Connection connection, String atendente, String solicitante, String assunto, String data, String hora, String status, String concluido, String reaberto, String detalhes) {
         Thread thread = new Thread(() -> {
 
             try {
 
                 PreparedStatement pst;
 
-                String sql = "INSERT INTO AGENDA (ATENDENTE, SOLICITANTE, DATA, HORA, STATUS, CONCLUIDO, REABERTO, DETALHES) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                String sql = "INSERT INTO AGENDA (ATENDENTE, SOLICITANTE, ASSUNTO, DATA, HORA, STATUS, CONCLUIDO, REABERTO, DETALHES) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
                 pst = connection.prepareStatement(sql);
 
                 pst.setString(1, atendente.toUpperCase());
                 pst.setString(2, solicitante.toUpperCase());
-                pst.setString(3, data.toUpperCase());
-                pst.setString(4, hora.toUpperCase());
-                pst.setString(5, status.toUpperCase());
-                pst.setString(6, concluido.toUpperCase());
-                pst.setString(7, reaberto.toUpperCase());
-                pst.setString(8, detalhes.toUpperCase());
+                pst.setString(3, assunto.toUpperCase());
+                pst.setString(4, data.toUpperCase());
+                pst.setString(5, hora.toUpperCase());
+                pst.setString(6, status.toUpperCase());
+                pst.setString(7, concluido.toUpperCase());
+                pst.setString(8, reaberto.toUpperCase());
+                pst.setString(9, detalhes.toUpperCase());
 
                 pst.executeUpdate();
 

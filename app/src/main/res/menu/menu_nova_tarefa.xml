@@ -4,5 +4,9 @@
 
     <item
         android:id="@+id/adicionar"
-        android:title="Adicionar" />
+        android:title="Adicionar Tarefa" />
+
+    <item
+        android:id="@+id/dataHora"
+        android:title="Usar Data e Hora atual" />
 </menu>

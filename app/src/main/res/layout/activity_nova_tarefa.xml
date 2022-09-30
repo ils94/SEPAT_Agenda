@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".novaTarefa">
+    tools:context=".NovaTarefa">
 
     <EditText
         android:id="@+id/solicitante"
@@ -36,12 +36,6 @@
             android:layout_weight="1"
             android:hint="Hora"
             android:paddingHorizontal="5dp" />
-
-        <Button
-            android:id="@+id/dataEHora"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hora e Data" />
 
     </LinearLayout>
 
