@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
 
                 String url = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName;
 
-                if (!dbName.isEmpty()) {
+                if (!(dbName.isEmpty() || tinyDB.getString("atendente").equals(""))) {
 
                     connection = DriverManager.getConnection(url, dbUser, dbPass);
                 }
@@ -334,6 +335,28 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
 
                 break;
 
+            case R.id.compartilharLink:
+
+                if (tinyDB.getString("dbName").isEmpty()) {
+
+                    Toast.makeText(this, "Ainda não há nenhuma credencial salva.", Toast.LENGTH_SHORT).show();
+                } else {
+
+                    String link = "https://sepatagenda.db/"
+                            + tinyDB.getString("dbName")
+                            + "/" + tinyDB.getString("dbUser")
+                            + "/" + tinyDB.getString("dbPass")
+                            + "/" + tinyDB.getString("dbHost")
+                            + "/" + tinyDB.getString("dbPort");
+
+                    Intent shareLinkIntent = new Intent(Intent.ACTION_SEND);
+                    shareLinkIntent.setType("text/plain");
+                    shareLinkIntent.putExtra(Intent.EXTRA_TEXT, link);
+                    startActivity(Intent.createChooser(shareLinkIntent, "Compartilhar link com..."));
+                }
+
+                break;
+
             case R.id.novaTarefa:
 
                 Intent myIntent = new Intent(MainActivity.this, NovaTarefa.class);
@@ -362,6 +385,15 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
         tinyDB = new TinyDB(MainActivity.this);
 
         makeConnection();
+
+        Uri uri = getIntent().getData();
+
+        if (uri != null) {
+
+            String path = uri.toString();
+
+            deepLink(path.replace("https://sepatagenda.db/", ""));
+        }
     }
 
     @Override
@@ -425,5 +457,29 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
                 Toast.makeText(MainActivity.this, "O Status já está marcado como ''Resolvido''", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void limparChaves() {
+
+        tinyDB.remove("dbName");
+        tinyDB.remove("dbUser");
+        tinyDB.remove("dbPass");
+        tinyDB.remove("dbHost");
+        tinyDB.remove("dbPort");
+    }
+
+    public void deepLink(String link) {
+
+        String[] linkArray = link.split("/");
+
+        limparChaves();
+
+        tinyDB.putString("dbName", linkArray[0]);
+        tinyDB.putString("dbUser", linkArray[1]);
+        tinyDB.putString("dbPass", linkArray[2]);
+        tinyDB.putString("dbHost", linkArray[3]);
+        tinyDB.putString("dbPort", linkArray[4]);
+
+        login();
     }
 }
