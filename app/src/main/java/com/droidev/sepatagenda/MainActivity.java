@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
     RecyclerView RecyclerView;
     RecyclerView.Adapter Adapter;
 
-    private Connection connection;
+    public static Connection connection;
     private Boolean confirmar = false;
 
     TinyDB tinyDB;
@@ -338,7 +338,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
+        getMenuInflater().inflate(R.menu.menu_main_activity, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

@@ -12,6 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Sepatagenda">
         <activity
+            android:name=".novaTarefa"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".DetalhesActivity"
             android:exported="false" />
         <activity
