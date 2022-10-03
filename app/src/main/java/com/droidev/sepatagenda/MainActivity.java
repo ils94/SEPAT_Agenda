@@ -2,7 +2,6 @@ package com.droidev.sepatagenda;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,7 +29,6 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity implements RecyclerViewClickInterface {
 
     private ArrayList<String> banco;
-    private String data, hora;
 
     RecyclerView RecyclerView;
     RecyclerView.Adapter Adapter;
@@ -38,28 +36,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
     public static Connection connection;
     private Boolean confirmar = false;
 
-    TinyDB tinyDB;
+    private Miscs miscs;
 
-    public void dataHora() {
-
-        data = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
-
-        data = data.replace("/01/", "/jan/")
-                .replace("/02/", "/fev/")
-                .replace("/03/", "/mar/")
-                .replace("/04/", "/abr/")
-                .replace("/05/", "/mai/")
-                .replace("/06/", "/jun/")
-                .replace("/07/", "/jul/")
-                .replace("/08/", "/ago/")
-                .replace("/09/", "/set/")
-                .replace("/10/", "/out/")
-                .replace("/11/", "/nov/")
-                .replace("/12/", "/dez/")
-                .toUpperCase();
-
-        hora = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
-    }
+    private TinyDB tinyDB;
 
     public void makeConnection() {
 
@@ -178,11 +157,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
 
             } else {
 
-                dataHora();
-
                 DBQueries db = new DBQueries();
 
-                db.marcarResolvido(MainActivity.this, connection, id, status, atendente + " - " + data + " - " + hora);
+                db.marcarResolvido(MainActivity.this, connection, id, status, atendente + " - " + miscs.dataHoje() + " - " + miscs.horaAgora());
             }
         } catch (Exception e) {
 
@@ -381,6 +358,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
         RecyclerView = findViewById(R.id.visualizador_recycle);
 
         setTitle("SEPAT Agenda");
+
+        miscs = new Miscs();
 
         tinyDB = new TinyDB(MainActivity.this);
 

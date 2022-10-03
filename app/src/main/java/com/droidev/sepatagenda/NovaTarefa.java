@@ -6,7 +6,6 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -23,7 +22,7 @@ public class NovaTarefa extends AppCompatActivity {
     RadioGroup radioGroup;
     DBQueries dbQueries;
     TinyDB tinyDB;
-    String data, hora;
+    Miscs miscs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +30,8 @@ public class NovaTarefa extends AppCompatActivity {
         setContentView(R.layout.activity_nova_tarefa);
 
         setTitle("Nova Tarefa");
+
+        miscs = new Miscs();
 
         dbQueries = new DBQueries();
 
@@ -54,33 +55,37 @@ public class NovaTarefa extends AppCompatActivity {
 
             case R.id.adicionar:
 
-                if (!(solicitante.getText().toString().equals("")
+                if (solicitante.getText().toString().equals("")
                         || dataEditText.getText().toString().equals("")
                         || horaEditText.toString().equals("")
-                        || mensagem.getText().toString().equals(""))) {
-
-                    dbQueries.inserir(NovaTarefa.this,
-                            MainActivity.connection,
-                            tinyDB.getString("atendente"),
-                            solicitante.getText().toString(),
-                            assunto.getText().toString(),
-                            dataEditText.getText().toString(),
-                            horaEditText.getText().toString(),
-                            grupo(),
-                            "AINDA EM ABERTO",
-                            "NINGUEM",
-                            mensagem.getText().toString());
-
-                    Toast.makeText(NovaTarefa.this, "Tarefa adicionada.", Toast.LENGTH_SHORT).show();
-                    
-                    assunto.setText("");
-                    dataEditText.setText("");
-                    horaEditText.setText("");
-                    mensagem.setText("");
-
-                } else {
+                        || mensagem.getText().toString().equals("")) {
 
                     Toast.makeText(NovaTarefa.this, "Preencha todos os campos.", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    if (MainActivity.connection == null) {
+
+                        Toast.makeText(NovaTarefa.this, "Não há nenhuma conexão com o banco, tente novamente.", Toast.LENGTH_SHORT).show();
+
+                    } else {
+
+                        dbQueries.inserir(NovaTarefa.this,
+                                MainActivity.connection,
+                                tinyDB.getString("atendente"),
+                                solicitante.getText().toString(),
+                                assunto.getText().toString(),
+                                dataEditText.getText().toString(),
+                                horaEditText.getText().toString(),
+                                grupo(),
+                                "AINDA EM ABERTO",
+                                "NINGUEM",
+                                mensagem.getText().toString());
+
+                        Toast.makeText(NovaTarefa.this, "Tarefa adicionada.", Toast.LENGTH_SHORT).show();
+
+                        assunto.setText("");
+                        mensagem.setText("");
+                    }
                 }
 
                 break;
@@ -104,7 +109,7 @@ public class NovaTarefa extends AppCompatActivity {
 
         int selectedId = radioGroup.getCheckedRadioButtonId();
 
-        radioButton = (RadioButton) findViewById(selectedId);
+        radioButton = findViewById(selectedId);
 
         return radioButton.getText().toString();
 
@@ -112,25 +117,8 @@ public class NovaTarefa extends AppCompatActivity {
 
     public void dataHora() {
 
-        data = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+        dataEditText.setText(miscs.dataHoje());
 
-        data = data.replace("/01/", "/jan/")
-                .replace("/02/", "/fev/")
-                .replace("/03/", "/mar/")
-                .replace("/04/", "/abr/")
-                .replace("/05/", "/mai/")
-                .replace("/06/", "/jun/")
-                .replace("/07/", "/jul/")
-                .replace("/08/", "/ago/")
-                .replace("/09/", "/set/")
-                .replace("/10/", "/out/")
-                .replace("/11/", "/nov/")
-                .replace("/12/", "/dez/")
-                .toUpperCase();
-
-        hora = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
-
-        dataEditText.setText(data);
-        horaEditText.setText(hora);
+        horaEditText.setText(miscs.horaAgora());
     }
 }
