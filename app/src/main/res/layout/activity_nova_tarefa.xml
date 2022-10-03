@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Solicitante"
-        android:paddingHorizontal="5dp" />
+        android:paddingHorizontal="5dp"
+        android:singleLine="true" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,14 +27,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Data" />
+            android:hint="Data"
+            android:singleLine="true" />
 
         <EditText
             android:id="@+id/hora"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Hora" />
+            android:hint="Hora"
+            android:singleLine="true" />
 
     </LinearLayout>
 
@@ -69,7 +72,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Assunto"
-        android:paddingHorizontal="5dp" />
+        android:paddingHorizontal="5dp"
+        android:singleLine="true" />
 
     <EditText
         android:id="@+id/mensagem"

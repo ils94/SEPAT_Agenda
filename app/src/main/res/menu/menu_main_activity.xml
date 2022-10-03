@@ -14,13 +14,21 @@
         android:title="Procurar"
         app:showAsAction="always" />
 
-    <item
-        android:id="@+id/login"
-        android:title="Login" />
+    <item android:title="Banco">
 
-    <item
-        android:id="@+id/compartilharLink"
-        android:title="Compartilhar Link do DB" />
+        <menu>
+
+            <item
+                android:id="@+id/login"
+                android:title="Login" />
+
+            <item
+                android:id="@+id/compartilharLink"
+                android:title="Compartilhar Link do DB" />
+
+        </menu>
+
+    </item>
 
     <item
         android:id="@+id/novaTarefa"
