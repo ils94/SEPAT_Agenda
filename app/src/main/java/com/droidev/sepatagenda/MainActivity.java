@@ -1,5 +1,6 @@
 package com.droidev.sepatagenda;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -7,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -354,6 +357,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        ActionBar bar = getSupportActionBar();
+        assert bar != null;
+        bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000")));
 
         RecyclerView = findViewById(R.id.visualizador_recycle);
 
