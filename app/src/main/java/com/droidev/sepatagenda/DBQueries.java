@@ -1,11 +1,14 @@
 package com.droidev.sepatagenda;
 
 import android.app.Activity;
+import android.content.Context;
 import android.widget.Toast;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
@@ -13,8 +16,36 @@ public class DBQueries {
 
     ArrayList<String> visualizador = new ArrayList<>();
 
-    public ArrayList<String> carregar(Activity activity, Connection connection) {
+    public Connection connectDB(Context context) {
+
+        TinyDB tinyDB = new TinyDB(context);
+
+        Connection connection = null;
+
+        String dbHost = tinyDB.getString("dbHost");
+        String dbPort = tinyDB.getString("dbPort");
+        String dbName = tinyDB.getString("dbName");
+        String dbUser = tinyDB.getString("dbUser");
+        String dbPass = tinyDB.getString("dbPass");
+
+        String url = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName;
+
+        if (!dbName.isEmpty()) {
+
+            try {
+                connection = DriverManager.getConnection(url, dbUser, dbPass);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return connection;
+    }
+
+    public ArrayList<String> carregar(Activity activity) {
         Thread thread = new Thread(() -> {
+
+            Connection connection = connectDB(activity.getBaseContext());
 
             try {
 
@@ -51,11 +82,26 @@ public class DBQueries {
                             + "#@#Detalhes: " + mensagem);
                 }
 
+                rs.close();
+                stmt.close();
+
             } catch (Exception e) {
                 activity.runOnUiThread(() -> Toast.makeText(activity.getBaseContext(), e.toString(), Toast.LENGTH_SHORT).show());
+            } finally {
+
+                if (connection != null) {
+
+                    try {
+                        connection.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         });
+
         thread.start();
+
         try {
             thread.join();
         } catch (Exception e) {
@@ -65,8 +111,10 @@ public class DBQueries {
         return visualizador;
     }
 
-    public ArrayList<String> pesquisar(Activity activity, Connection connection, String string) {
+    public ArrayList<String> pesquisar(Activity activity, String string) {
         Thread thread = new Thread(() -> {
+
+            Connection connection = connectDB(activity.getBaseContext());
 
             try {
 
@@ -85,6 +133,7 @@ public class DBQueries {
                         "ORDER BY ID DESC";
 
                 pst = connection.prepareStatement(sql);
+
                 pst.setString(1, "%" + string + "%");
                 pst.setString(2, "%" + string + "%");
                 pst.setString(3, "%" + string + "%");
@@ -124,11 +173,26 @@ public class DBQueries {
                             + "#@#Detalhes: " + mensagem);
                 }
 
+                rs.close();
+                pst.close();
+
             } catch (Exception e) {
                 activity.runOnUiThread(() -> Toast.makeText(activity.getBaseContext(), e.toString(), Toast.LENGTH_SHORT).show());
+            } finally {
+
+                if (connection != null) {
+
+                    try {
+                        connection.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         });
+
         thread.start();
+
         try {
             thread.join();
         } catch (Exception e) {
@@ -138,9 +202,11 @@ public class DBQueries {
         return visualizador;
     }
 
-    public void marcarResolvido(Activity activity, Connection connection, String id, String status, String atendente) {
+    public void marcarResolvido(Activity activity, String id, String status, String atendente) {
 
         Thread thread = new Thread(() -> {
+
+            Connection connection = connectDB(activity.getBaseContext());
 
             try {
 
@@ -156,11 +222,25 @@ public class DBQueries {
 
                 pst.executeUpdate();
 
+                pst.close();
+
             } catch (Exception e) {
                 activity.runOnUiThread(() -> Toast.makeText(activity.getBaseContext(), e.toString(), Toast.LENGTH_SHORT).show());
+            } finally {
+
+                if (connection != null) {
+
+                    try {
+                        connection.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         });
+
         thread.start();
+
         try {
             thread.join();
         } catch (Exception e) {
@@ -168,8 +248,10 @@ public class DBQueries {
         }
     }
 
-    public void inserir(Activity activity, Connection connection, String atendente, String solicitante, String assunto, String data, String hora, String status, String concluido, String reaberto, String detalhes) {
+    public void inserir(Activity activity, String atendente, String solicitante, String assunto, String data, String hora, String status, String concluido, String reaberto, String detalhes) {
         Thread thread = new Thread(() -> {
+
+            Connection connection = connectDB(activity.getBaseContext());
 
             try {
 
@@ -191,11 +273,25 @@ public class DBQueries {
 
                 pst.executeUpdate();
 
+                pst.close();
+
             } catch (Exception e) {
                 activity.runOnUiThread(() -> Toast.makeText(activity.getBaseContext(), e.toString(), Toast.LENGTH_SHORT).show());
+            } finally {
+
+                if (connection != null) {
+
+                    try {
+                        connection.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         });
+
         thread.start();
+
         try {
             thread.join();
         } catch (Exception e) {

@@ -1,11 +1,8 @@
 package com.droidev.sepatagenda;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,10 +10,6 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 public class NovaTarefa extends AppCompatActivity {
 
@@ -31,10 +24,6 @@ public class NovaTarefa extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nova_tarefa);
-
-        ActionBar bar = getSupportActionBar();
-        assert bar != null;
-        bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000")));
 
         setTitle("Nova Tarefa");
 
@@ -70,29 +59,23 @@ public class NovaTarefa extends AppCompatActivity {
                     Toast.makeText(NovaTarefa.this, "Preencha todos os campos.", Toast.LENGTH_SHORT).show();
 
                 } else {
-                    if (MainActivity.connection == null) {
 
-                        Toast.makeText(NovaTarefa.this, "Não há nenhuma conexão com o banco, tente novamente.", Toast.LENGTH_SHORT).show();
 
-                    } else {
+                    dbQueries.inserir(NovaTarefa.this,
+                            tinyDB.getString("atendente"),
+                            solicitante.getText().toString(),
+                            assunto.getText().toString(),
+                            dataEditText.getText().toString(),
+                            horaEditText.getText().toString(),
+                            grupo(),
+                            "AINDA EM ABERTO",
+                            "NINGUEM",
+                            mensagem.getText().toString());
 
-                        dbQueries.inserir(NovaTarefa.this,
-                                MainActivity.connection,
-                                tinyDB.getString("atendente"),
-                                solicitante.getText().toString(),
-                                assunto.getText().toString(),
-                                dataEditText.getText().toString(),
-                                horaEditText.getText().toString(),
-                                grupo(),
-                                "AINDA EM ABERTO",
-                                "NINGUEM",
-                                mensagem.getText().toString());
+                    Toast.makeText(NovaTarefa.this, "Tarefa adicionada.", Toast.LENGTH_SHORT).show();
 
-                        Toast.makeText(NovaTarefa.this, "Tarefa adicionada.", Toast.LENGTH_SHORT).show();
-
-                        assunto.setText("");
-                        mensagem.setText("");
-                    }
+                    assunto.setText("");
+                    mensagem.setText("");
                 }
 
                 break;

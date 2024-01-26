@@ -1,6 +1,5 @@
 package com.droidev.sepatagenda;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -8,8 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,13 +18,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
+
 
 public class MainActivity extends AppCompatActivity implements RecyclerViewClickInterface {
 
@@ -36,62 +28,47 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
     RecyclerView RecyclerView;
     RecyclerView.Adapter Adapter;
 
-    public static Connection connection;
     private Boolean confirmar = false;
 
     private Miscs miscs;
 
     private TinyDB tinyDB;
 
-    public void makeConnection() {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        new Thread(() -> {
-            try {
+        setContentView(R.layout.activity_main);
 
-                String dbHost = tinyDB.getString("dbHost");
-                String dbPort = tinyDB.getString("dbPort");
-                String dbName = tinyDB.getString("dbName");
-                String dbUser = tinyDB.getString("dbUser");
-                String dbPass = tinyDB.getString("dbPass");
+        RecyclerView = findViewById(R.id.visualizador_recycle);
+        RecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-                String url = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName;
+        setTitle("SEPAT Agenda");
 
-                if (!(dbName.isEmpty() || tinyDB.getString("atendente").equals(""))) {
+        miscs = new Miscs();
 
-                    connection = DriverManager.getConnection(url, dbUser, dbPass);
-                }
+        tinyDB = new TinyDB(MainActivity.this);
 
-            } catch (SQLException e) {
-                runOnUiThread(() -> Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show());
-            }
-        }).start();
+        Uri uri = getIntent().getData();
+
+        if (uri != null) {
+
+            String path = uri.toString();
+
+            deepLink(path.replace("https://sepatagenda.db/", ""));
+        }
     }
 
     public void carregar() {
 
-        try {
+        DBQueries db = new DBQueries();
 
-            if (connection.isClosed() || connection == null) {
+        banco = new ArrayList<>();
 
-                makeConnection();
+        banco.addAll(db.carregar(MainActivity.this));
 
-            } else {
-
-                DBQueries db = new DBQueries();
-
-                banco = new ArrayList<>();
-
-                RecyclerView = findViewById(R.id.visualizador_recycle);
-                RecyclerView.setLayoutManager(new LinearLayoutManager(this));
-                Adapter = new RecyclerViewAdapter(this, banco, this);
-                RecyclerView.setAdapter(Adapter);
-
-                banco.addAll(db.carregar(MainActivity.this, connection));
-            }
-        } catch (Exception e) {
-
-            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
-        }
+        Adapter = new RecyclerViewAdapter(this, banco, this);
+        RecyclerView.setAdapter(Adapter);
     }
 
     public void procurar() {
@@ -120,31 +97,16 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
 
         positiveButton.setOnClickListener(v -> {
 
-            try {
+            DBQueries db = new DBQueries();
 
-                if (connection.isClosed() || connection == null) {
+            banco = new ArrayList<>();
 
-                    makeConnection();
+            banco.addAll(db.pesquisar(MainActivity.this, editText.getText().toString()));
 
-                } else {
+            Adapter = new RecyclerViewAdapter(MainActivity.this, banco, MainActivity.this);
+            RecyclerView.setAdapter(Adapter);
 
-                    DBQueries db = new DBQueries();
-
-                    banco = new ArrayList<>();
-
-                    RecyclerView = findViewById(R.id.visualizador_recycle);
-                    RecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                    Adapter = new RecyclerViewAdapter(MainActivity.this, banco, MainActivity.this);
-                    RecyclerView.setAdapter(Adapter);
-
-                    banco.addAll(db.pesquisar(MainActivity.this, connection, editText.getText().toString()));
-
-                    dialog.dismiss();
-                }
-            } catch (Exception e) {
-
-                Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-            }
+            dialog.dismiss();
         });
 
         neutralButton.setOnClickListener(v -> editText.setText(""));
@@ -152,22 +114,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
 
     public void mudarStatus(String id, String status, String atendente) {
 
-        try {
+        DBQueries db = new DBQueries();
 
-            if (connection.isClosed() || connection == null) {
-
-                makeConnection();
-
-            } else {
-
-                DBQueries db = new DBQueries();
-
-                db.marcarResolvido(MainActivity.this, connection, id, status, atendente + " - " + miscs.dataHoje() + " - " + miscs.horaAgora());
-            }
-        } catch (Exception e) {
-
-            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
-        }
+        db.marcarResolvido(MainActivity.this, id, status, atendente + " - " + miscs.dataHoje() + " - " + miscs.horaAgora());
     }
 
     @SuppressLint("SetTextI18n")
@@ -265,21 +214,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
                 dialog.dismiss();
 
                 Toast.makeText(MainActivity.this, "Salvo", Toast.LENGTH_SHORT).show();
-
-                new Thread(() -> {
-
-                    try {
-
-                        if (!(connection == null)) {
-
-                            connection.close();
-                        }
-
-                        makeConnection();
-                    } catch (SQLException e) {
-                        runOnUiThread(() -> Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show());
-                    }
-                }).start();
             }
         });
 
@@ -350,36 +284,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewClick
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main_activity, menu);
         return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_main);
-
-        ActionBar bar = getSupportActionBar();
-        assert bar != null;
-        bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000")));
-
-        RecyclerView = findViewById(R.id.visualizador_recycle);
-
-        setTitle("SEPAT Agenda");
-
-        miscs = new Miscs();
-
-        tinyDB = new TinyDB(MainActivity.this);
-
-        makeConnection();
-
-        Uri uri = getIntent().getData();
-
-        if (uri != null) {
-
-            String path = uri.toString();
-
-            deepLink(path.replace("https://sepatagenda.db/", ""));
-        }
     }
 
     @Override
